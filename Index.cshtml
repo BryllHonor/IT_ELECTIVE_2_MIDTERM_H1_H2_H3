@@ -1,0 +1,65 @@
+@model ShoppingCart
+@{
+    ViewData["Title"] = "Your Cart";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="display-heading mb-0">Active Cart</h2>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-comic-secondary">&larr; Keep Browsing</a>
+</div>
+
+@if (Model.Items.Count == 0)
+{
+    <div class="comic-card p-4 text-center">
+        <h3>The cart is empty!</h3>
+        <p>Head back to the catalog to add some issues.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-comic-primary">Browse Comics</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive panel-table mb-4">
+        <table class="table table-borderless mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Unit Price</th>
+                    <th style="width: 160px;">Quantity</th>
+                    <th>Line Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td class="fw-bold">@item.ProductName</td>
+                    <td>$@item.UnitPrice.ToString("0.00")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="ProductId" value="@item.ProductId" />
+                            <input type="number" name="Quantity" value="@item.Quantity" min="1"
+                                   class="form-control form-control-sm" style="width: 80px;" />
+                            <button type="submit" class="btn btn-comic-secondary btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td class="fw-bold">$@item.LineTotal.ToString("0.00")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="grand-total-banner">
+            Grand Total: $@Model.GrandTotal.ToString("0.00")
+        </div>
+        <a asp-controller="Checkout" asp-action="Index" class="btn btn-comic-primary btn-lg">Proceed to Checkout &rarr;</a>
+    </div>
+}
